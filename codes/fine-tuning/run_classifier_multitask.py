@@ -106,10 +106,10 @@ class AllProcessor(DataProcessor):
 
     def get_train_examples(self, data_dir):
         """See base class."""
-        train_data_imdb = pd.read_csv(os.path.join("IMDB_data/", "train.csv"),header=None,sep="\t").values
-        train_data_yelp_p = pd.read_csv(os.path.join("Yelp_p_data/yelp_polarity/", "train.csv"),header=None,sep=",").values
-        train_data_ag = pd.read_csv(os.path.join("AG_data/", "train.csv"),header=None).values
-        train_data_dbpedia = pd.read_csv(os.path.join("Dbpedia_data/", "train.csv"),header=None,sep=",").values
+        train_data_imdb = pd.read_csv(os.path.join(data_dir+"IMDB_data/", "train.csv"),header=None,sep="\t").values
+        train_data_yelp_p = pd.read_csv(os.path.join(data_dir+"Yelp_p_data/yelp_polarity/", "train.csv"),header=None,sep=",").values
+        train_data_ag = pd.read_csv(os.path.join(data_dir+"AG_data/", "train.csv"),header=None).values
+        train_data_dbpedia = pd.read_csv(os.path.join(data_dir+"Dbpedia_data/", "train.csv"),header=None,sep=",").values
         return self._create_examples(train_data_imdb, train_data_yelp_p, train_data_ag, train_data_dbpedia, "train")
 
     def get_dev_examples(self, data_dir):
