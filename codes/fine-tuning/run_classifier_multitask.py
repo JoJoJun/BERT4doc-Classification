@@ -114,10 +114,10 @@ class AllProcessor(DataProcessor):
 
     def get_dev_examples(self, data_dir):
         """See base class."""
-        test_data_imdb = pd.read_csv(os.path.join("IMDB_data/", "test.csv"),header=None,sep="\t").values
-        test_data_yelp_p = pd.read_csv(os.path.join("Yelp_p_data/yelp_polarity/", "test.csv"),header=None,sep=",").values
-        test_data_ag = pd.read_csv(os.path.join("AG_data/", "test.csv"),header=None).values
-        test_data_dbpedia = pd.read_csv(os.path.join("Dbpedia_data/", "test.csv"),header=None,sep=",").values
+        test_data_imdb = pd.read_csv(os.path.join(data_dir+"IMDB_data/", "test.csv"),header=None,sep="\t").values
+        test_data_yelp_p = pd.read_csv(os.path.join(data_dir+"Yelp_p_data/yelp_polarity/", "test.csv"),header=None,sep=",").values
+        test_data_ag = pd.read_csv(os.path.join(data_dir+"AG_data/", "test.csv"),header=None).values
+        test_data_dbpedia = pd.read_csv(os.path.join(data_dir+"Dbpedia_data/", "test.csv"),header=None,sep=",").values
         return self._create_examples(test_data_imdb, test_data_yelp_p, test_data_ag, test_data_dbpedia, "test")
 
     def get_labels(self):
