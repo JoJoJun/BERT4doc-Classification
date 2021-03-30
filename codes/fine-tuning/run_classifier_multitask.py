@@ -106,18 +106,18 @@ class AllProcessor(DataProcessor):
 
     def get_train_examples(self, data_dir):
         """See base class."""
-        train_data_imdb = pd.read_csv(os.path.join(data_dir+"IMDB_data/", "train.csv"),header=None,sep="\t").values
-        train_data_yelp_p = pd.read_csv(os.path.join(data_dir+"Yelp_p_data/yelp_polarity/", "train.csv"),header=None,sep=",").values
-        train_data_ag = pd.read_csv(os.path.join(data_dir+"AG_data/", "train.csv"),header=None).values
-        train_data_dbpedia = pd.read_csv(os.path.join(data_dir+"Dbpedia_data/", "train.csv"),header=None,sep=",").values
+        train_data_imdb = pd.read_csv(os.path.join(data_dir+"IMDB_data/", "train.csv"),header=None,sep="\t",iterator = True,chunksize=10000)
+        train_data_yelp_p = pd.read_csv(os.path.join(data_dir+"Yelp_p_data/yelp_polarity/", "train.csv"),header=None,sep=",",iterator = True,chunksize=10000)
+        train_data_ag = pd.read_csv(os.path.join(data_dir+"AG_data/", "train.csv"),header=None,iterator = True,chunksize=10000)
+        # train_data_dbpedia = pd.read_csv(os.path.join(data_dir+"Dbpedia_data/", "train.csv"),header=None,sep=",",iterator = True,chunksize=10000)
         return self._create_examples(train_data_imdb, train_data_yelp_p, train_data_ag, train_data_dbpedia, "train")
 
     def get_dev_examples(self, data_dir):
         """See base class."""
-        test_data_imdb = pd.read_csv(os.path.join(data_dir+"IMDB_data/", "test.csv"),header=None,sep="\t").values
-        test_data_yelp_p = pd.read_csv(os.path.join(data_dir+"Yelp_p_data/yelp_polarity/", "test.csv"),header=None,sep=",").values
-        test_data_ag = pd.read_csv(os.path.join(data_dir+"AG_data/", "test.csv"),header=None).values
-        test_data_dbpedia = pd.read_csv(os.path.join(data_dir+"Dbpedia_data/", "test.csv"),header=None,sep=",").values
+        test_data_imdb = pd.read_csv(os.path.join(data_dir+"IMDB_data/", "test.csv"),header=None,sep="\t",iterator = True,chunksize=10000)
+        test_data_yelp_p = pd.read_csv(os.path.join(data_dir+"Yelp_p_data/yelp_polarity/", "test.csv"),header=None,sep=",",iterator = True,chunksize=10000)
+        test_data_ag = pd.read_csv(os.path.join(data_dir+"AG_data/", "test.csv"),header=None,iterator = True,chunksize=10000)
+        # test_data_dbpedia = pd.read_csv(os.path.join(data_dir+"Dbpedia_data/", "test.csv"),header=None,sep=",",iterator = True,chunksize=10000)
         return self._create_examples(test_data_imdb, test_data_yelp_p, test_data_ag, test_data_dbpedia, "test")
 
     def get_labels(self):
@@ -130,56 +130,63 @@ class AllProcessor(DataProcessor):
     def _create_examples(self, lines_imdb, lines_yelp_p, lines_ag, lines_dbpedia, set_type):
         """Creates examples for the training and dev sets."""
         examples = []
-        for (i, line) in enumerate(lines_imdb):
-            #if i>147:break
-            guid = "%s-%s" % (set_type, i)
-            s = str(line[1]).split()
-            if len(s)>510:s=s[:128]+s[-382:]
-            text_a = tokenization.convert_to_unicode(" ".join(s))
-            label = tokenization.convert_to_unicode(str(line[0]))
-            if i%1000==0:
-                print(i)
-                print("guid=",guid)
-                print("text_a=",text_a)
-                print("label=",label)
-            examples.append(InputExample(guid=guid, text_a=text_a, text_b=None, label=label, dataset_label="1"))
+        for line_imdb in lines_imdb:
+            line_imdb = line_imdb.values
+            for (i, line) in enumerate(line_imdb):
+                # if i>147:break
+                guid = "%s-%s" % (set_type, i)
+                s = str(line[1]).split()
+                if len(s) > 510: s = s[:128] + s[-382:]
+                text_a = tokenization.convert_to_unicode(" ".join(s))
+                label = tokenization.convert_to_unicode(str(line[0]))
+                if i % 1000 == 0:
+                    print(i)
+                    print("imdb guid=", guid)
+                    print("text_a=", text_a)
+                    print("label=", label)
+                examples.append(InputExample(guid=guid, text_a=text_a, text_b=None, label=label, dataset_label="1"))
 
-        for (i, line) in enumerate(lines_yelp_p):
-            #if i>147:break
-            guid = "%s-%s" % (set_type, i)
-            text_a = tokenization.convert_to_unicode(str(line[1]))
-            label = tokenization.convert_to_unicode(str(line[0]))
-            if i%1000==0:
-                print(i)
-                print("guid=",guid)
-                print("text_a=",text_a)
-                print("label=",label)
-            examples.append(InputExample(guid=guid, text_a=text_a, text_b=None, label=label, dataset_label="2"))
+        for line_yelp_p in lines_yelp_p:
+            line_yelp_p = line_yelp_p.values
+            for (i, line) in enumerate(line_yelp_p):
+                # if i>147:break
+                guid = "%s-%s" % (set_type, i)
+                text_a = tokenization.convert_to_unicode(str(line[1]))
+                label = tokenization.convert_to_unicode(str(line[0]))
+                if i % 1000 == 0:
+                    print(i)
+                    print("yelp guid=", guid)
+                    print("text_a=", text_a)
+                    print("label=", label)
+                examples.append(InputExample(guid=guid, text_a=text_a, text_b=None, label=label, dataset_label="2"))
 
+        for line_ag in lines_ag:
+            line_ag = line_ag.values
+            for (i, line) in enumerate(line_ag):
+                # if i>147:break
+                guid = "%s-%s" % (set_type, i)
+                text_a = tokenization.convert_to_unicode(line[1] + " - " + line[2])
+                label = tokenization.convert_to_unicode(str(line[0]))
+                if i % 1000 == 0:
+                    print(i)
+                    print("ag guid=", guid)
+                    print("text_a=", text_a)
+                    print("label=", label)
+                examples.append(InputExample(guid=guid, text_a=text_a, text_b=None, label=label, dataset_label="3"))
 
-        for (i, line) in enumerate(lines_ag):
-            #if i>147:break
-            guid = "%s-%s" % (set_type, i)
-            text_a = tokenization.convert_to_unicode(line[1]+" - "+line[2])
-            label = tokenization.convert_to_unicode(str(line[0]))
-            if i%1000==0:
-                print(i)
-                print("guid=",guid)
-                print("text_a=",text_a)
-                print("label=",label)
-            examples.append(InputExample(guid=guid, text_a=text_a, text_b=None, label=label, dataset_label="3"))
-
-        for (i, line) in enumerate(lines_dbpedia):
-            #if i>147:break
-            guid = "%s-%s" % (set_type, i)
-            text_a = tokenization.convert_to_unicode(str(line[1])+" "+str(line[2]))
-            label = tokenization.convert_to_unicode(str(line[0]))
-            if i%1000==0:
-                print(i)
-                print("guid=",guid)
-                print("text_a=",text_a)
-                print("label=",label)
-            examples.append(InputExample(guid=guid, text_a=text_a, text_b=None, label=label, dataset_label="4"))
+        # for line_dbpedia in lines_dbpedia:
+        #     line_dbpedia = line_dbpedia.values
+        #     for (i, line) in enumerate(line_dbpedia):
+        #         # if i>147:break
+        #         guid = "%s-%s" % (set_type, i)
+        #         text_a = tokenization.convert_to_unicode(str(line[1]) + " " + str(line[2]))
+        #         label = tokenization.convert_to_unicode(str(line[0]))
+        #         if i % 1000 == 0:
+        #             print(i)
+        #             print("dbpedia guid=", guid)
+        #             print("text_a=", text_a)
+        #             print("label=", label)
+        #         examples.append(InputExample(guid=guid, text_a=text_a, text_b=None, label=label, dataset_label="4"))
 
         return examples
 
@@ -199,9 +206,9 @@ def convert_examples_to_features(examples, label_list, max_seq_length, tokenizer
     for (i, label) in enumerate(label_list[2]):
         label_map_3[label] = i
 
-    label_map_4 = {}
-    for (i, label) in enumerate(label_list[3]):
-        label_map_4[label] = i
+    # label_map_4 = {}
+    # for (i, label) in enumerate(label_list[3]):
+    #     label_map_4[label] = i
 
 
     features_1 = []
@@ -279,7 +286,7 @@ def convert_examples_to_features(examples, label_list, max_seq_length, tokenizer
         if example.dataset_label=="1":label_id = label_map_1[example.label]
         if example.dataset_label=="2":label_id = label_map_2[example.label]
         if example.dataset_label=="3":label_id = label_map_3[example.label]
-        if example.dataset_label=="4":label_id = label_map_4[example.label]
+        # if example.dataset_label=="4":label_id = label_map_4[example.label]
 
         if ex_index < 5:
             logger.info("*** Example ***")
@@ -315,14 +322,14 @@ def convert_examples_to_features(examples, label_list, max_seq_length, tokenizer
                             segment_ids=segment_ids,
                             label_id=label_id,
                             dataset_label_id=int(example.dataset_label)))
-        if example.dataset_label == "4":
-            features_4.append(
-                    InputFeatures(
-                            input_ids=input_ids,
-                            input_mask=input_mask,
-                            segment_ids=segment_ids,
-                            label_id=label_id,
-                            dataset_label_id=int(example.dataset_label)))
+        # if example.dataset_label == "4":
+        #     features_4.append(
+        #             InputFeatures(
+        #                     input_ids=input_ids,
+        #                     input_mask=input_mask,
+        #                     segment_ids=segment_ids,
+        #                     label_id=label_id,
+        #                     dataset_label_id=int(example.dataset_label)))
 
     return features_1, features_2, features_3, features_4
 
@@ -579,13 +586,13 @@ def main():
     eval_data_3 = TensorDataset(all_input_ids, all_input_mask, all_segment_ids, all_label_ids, all_dataset_label_ids)
     eval_dataloader_3 = DataLoader(eval_data_3, batch_size=args.eval_batch_size, shuffle=False)
 
-    all_input_ids = torch.tensor([f.input_ids for f in eval_features_4], dtype=torch.long)
-    all_input_mask = torch.tensor([f.input_mask for f in eval_features_4], dtype=torch.long)
-    all_segment_ids = torch.tensor([f.segment_ids for f in eval_features_4], dtype=torch.long)
-    all_label_ids = torch.tensor([f.label_id for f in eval_features_4], dtype=torch.long)
-    all_dataset_label_ids = torch.tensor([f.dataset_label_id for f in eval_features_4], dtype=torch.long)
-    eval_data_4 = TensorDataset(all_input_ids, all_input_mask, all_segment_ids, all_label_ids, all_dataset_label_ids)
-    eval_dataloader_4 = DataLoader(eval_data_4, batch_size=args.eval_batch_size, shuffle=False)
+    # all_input_ids = torch.tensor([f.input_ids for f in eval_features_4], dtype=torch.long)
+    # all_input_mask = torch.tensor([f.input_mask for f in eval_features_4], dtype=torch.long)
+    # all_segment_ids = torch.tensor([f.segment_ids for f in eval_features_4], dtype=torch.long)
+    # all_label_ids = torch.tensor([f.label_id for f in eval_features_4], dtype=torch.long)
+    # all_dataset_label_ids = torch.tensor([f.dataset_label_id for f in eval_features_4], dtype=torch.long)
+    # eval_data_4 = TensorDataset(all_input_ids, all_input_mask, all_segment_ids, all_label_ids, all_dataset_label_ids)
+    # eval_dataloader_4 = DataLoader(eval_data_4, batch_size=args.eval_batch_size, shuffle=False)
 
     if args.do_train:
         train_features_1, train_features_2, train_features_3, train_features_4 = convert_examples_to_features(
@@ -631,23 +638,23 @@ def main():
             train_sampler_3 = DistributedSampler(train_data_3)
         train_dataloader_3 = DataLoader(train_data_3, sampler=train_sampler_3, batch_size=args.train_batch_size)
 
-        all_input_ids = torch.tensor([f.input_ids for f in train_features_4], dtype=torch.long)
-        all_input_mask = torch.tensor([f.input_mask for f in train_features_4], dtype=torch.long)
-        all_segment_ids = torch.tensor([f.segment_ids for f in train_features_4], dtype=torch.long)
-        all_label_ids = torch.tensor([f.label_id for f in train_features_4], dtype=torch.long)
-        all_dataset_label_ids = torch.tensor([f.dataset_label_id for f in train_features_4], dtype=torch.long)
-        train_data_4 = TensorDataset(all_input_ids, all_input_mask, all_segment_ids, all_label_ids, all_dataset_label_ids)
-        if args.local_rank == -1:
-            train_sampler_4 = RandomSampler(train_data_4)
-        else:
-            train_sampler_4 = DistributedSampler(train_data_4)
-        train_dataloader_4 = DataLoader(train_data_4, sampler=train_sampler_4, batch_size=args.train_batch_size)
+        # all_input_ids = torch.tensor([f.input_ids for f in train_features_4], dtype=torch.long)
+        # all_input_mask = torch.tensor([f.input_mask for f in train_features_4], dtype=torch.long)
+        # all_segment_ids = torch.tensor([f.segment_ids for f in train_features_4], dtype=torch.long)
+        # all_label_ids = torch.tensor([f.label_id for f in train_features_4], dtype=torch.long)
+        # all_dataset_label_ids = torch.tensor([f.dataset_label_id for f in train_features_4], dtype=torch.long)
+        # train_data_4 = TensorDataset(all_input_ids, all_input_mask, all_segment_ids, all_label_ids, all_dataset_label_ids)
+        # if args.local_rank == -1:
+        #     train_sampler_4 = RandomSampler(train_data_4)
+        # else:
+        #     train_sampler_4 = DistributedSampler(train_data_4)
+        # train_dataloader_4 = DataLoader(train_data_4, sampler=train_sampler_4, batch_size=args.train_batch_size)
 
 
         print("len(train_features_1)=",len(train_features_1))
         print("len(train_features_2)=",len(train_features_2))
         print("len(train_features_3)=",len(train_features_3))
-        print("len(train_features_4)=",len(train_features_4))
+        # print("len(train_features_4)=",len(train_features_4))
         a=[]
         for i in range(int(len(train_features_1)/args.train_batch_size)):
             a.append(1)
@@ -655,8 +662,8 @@ def main():
             a.append(2)
         for i in range(int(len(train_features_3)/args.train_batch_size)):
             a.append(3)
-        for i in range(int(len(train_features_4)/args.train_batch_size)):
-            a.append(4)
+        # for i in range(int(len(train_features_4)/args.train_batch_size)):
+        #     a.append(4)
         print("len(a)=",len(a))
         random.shuffle(a)
         print("a[:20]=",a[:20])
@@ -673,7 +680,7 @@ def main():
                 if number==1:batch=train_dataloader_1.__iter__().__next__()
                 if number==2:batch=train_dataloader_2.__iter__().__next__()
                 if number==3:batch=train_dataloader_3.__iter__().__next__()
-                if number==4:batch=train_dataloader_4.__iter__().__next__()
+                # if number==4:batch=train_dataloader_4.__iter__().__next__()
                 batch = tuple(t.to(device) for t in batch)
                 input_ids, input_mask, segment_ids, label_ids, dataset_label_id = batch
                 loss, _ = model(input_ids, segment_ids, input_mask, label_ids, dataset_label_id)
@@ -783,35 +790,35 @@ def main():
             eval_loss_ag = eval_loss
             eval_accuracy_ag = eval_accuracy
 
-            eval_loss, eval_accuracy = 0, 0
-            nb_eval_steps, nb_eval_examples = 0, 0
-            with open(os.path.join(args.output_dir, "results_dbpedia_ep_"+str(epoch)+".txt"),"w") as f:
-                for input_ids, input_mask, segment_ids, label_ids, dataset_label_id in eval_dataloader_4:
-                    input_ids = input_ids.to(device)
-                    input_mask = input_mask.to(device)
-                    segment_ids = segment_ids.to(device)
-                    label_ids = label_ids.to(device)
-
-                    with torch.no_grad():
-                        tmp_eval_loss, logits = model(input_ids, segment_ids, input_mask, label_ids, dataset_label_id)
-
-                    logits = logits.detach().cpu().numpy()
-                    label_ids = label_ids.to('cpu').numpy()
-                    outputs = np.argmax(logits, axis=1)
-                    for output in outputs:
-                        f.write(str(output)+"\n")
-                    tmp_eval_accuracy=np.sum(outputs == label_ids)
-
-                    eval_loss += tmp_eval_loss.mean().item()
-                    eval_accuracy += tmp_eval_accuracy
-
-                    nb_eval_examples += input_ids.size(0)
-                    nb_eval_steps += 1
-
-            eval_loss = eval_loss / nb_eval_steps
-            eval_accuracy = eval_accuracy / nb_eval_examples
-            eval_loss_dbpedia = eval_loss
-            eval_accuracy_dbpedia = eval_accuracy
+            # eval_loss, eval_accuracy = 0, 0
+            # nb_eval_steps, nb_eval_examples = 0, 0
+            # with open(os.path.join(args.output_dir, "results_dbpedia_ep_"+str(epoch)+".txt"),"w") as f:
+            #     for input_ids, input_mask, segment_ids, label_ids, dataset_label_id in eval_dataloader_4:
+            #         input_ids = input_ids.to(device)
+            #         input_mask = input_mask.to(device)
+            #         segment_ids = segment_ids.to(device)
+            #         label_ids = label_ids.to(device)
+            #
+            #         with torch.no_grad():
+            #             tmp_eval_loss, logits = model(input_ids, segment_ids, input_mask, label_ids, dataset_label_id)
+            #
+            #         logits = logits.detach().cpu().numpy()
+            #         label_ids = label_ids.to('cpu').numpy()
+            #         outputs = np.argmax(logits, axis=1)
+            #         for output in outputs:
+            #             f.write(str(output)+"\n")
+            #         tmp_eval_accuracy=np.sum(outputs == label_ids)
+            #
+            #         eval_loss += tmp_eval_loss.mean().item()
+            #         eval_accuracy += tmp_eval_accuracy
+            #
+            #         nb_eval_examples += input_ids.size(0)
+            #         nb_eval_steps += 1
+            #
+            # eval_loss = eval_loss / nb_eval_steps
+            # eval_accuracy = eval_accuracy / nb_eval_examples
+            # eval_loss_dbpedia = eval_loss
+            # eval_accuracy_dbpedia = eval_accuracy
 
             result = {'eval_loss_imdb': eval_loss_imdb,
                       'eval_accuracy_imdb': eval_accuracy_imdb,
@@ -819,8 +826,8 @@ def main():
                       'eval_accuracy_yelp_p': eval_accuracy_yelp_p,
                       'eval_loss_ag': eval_loss_ag,
                       'eval_accuracy_ag': eval_accuracy_ag,
-                      'eval_loss_dbpedia': eval_loss_dbpedia,
-                      'eval_accuracy_dbpedia': eval_accuracy_dbpedia,
+                      # 'eval_loss_dbpedia': eval_loss_dbpedia,
+                      # 'eval_accuracy_dbpedia': eval_accuracy_dbpedia,
                       'global_step': global_step,
                       'loss': tr_loss/nb_tr_steps}
 
