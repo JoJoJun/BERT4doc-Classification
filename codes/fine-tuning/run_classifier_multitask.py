@@ -109,7 +109,7 @@ class AllProcessor(DataProcessor):
         train_data_imdb = pd.read_csv(os.path.join(data_dir+"IMDB_data/", "train.csv"),header=None,sep="\t",iterator = True,chunksize=10000)
         train_data_yelp_p = pd.read_csv(os.path.join(data_dir+"Yelp_p_data/yelp_polarity/", "train.csv"),header=None,sep=",",iterator = True,chunksize=10000)
         train_data_ag = pd.read_csv(os.path.join(data_dir+"AG_data/", "train.csv"),header=None,iterator = True,chunksize=10000)
-        # train_data_dbpedia = pd.read_csv(os.path.join(data_dir+"Dbpedia_data/", "train.csv"),header=None,sep=",",iterator = True,chunksize=10000)
+        train_data_dbpedia = pd.read_csv(os.path.join(data_dir+"Dbpedia_data/", "train.csv"),header=None,sep=",",iterator = True,chunksize=10000)
         return self._create_examples(train_data_imdb, train_data_yelp_p, train_data_ag, train_data_dbpedia, "train")
 
     def get_dev_examples(self, data_dir):
@@ -117,7 +117,7 @@ class AllProcessor(DataProcessor):
         test_data_imdb = pd.read_csv(os.path.join(data_dir+"IMDB_data/", "test.csv"),header=None,sep="\t",iterator = True,chunksize=10000)
         test_data_yelp_p = pd.read_csv(os.path.join(data_dir+"Yelp_p_data/yelp_polarity/", "test.csv"),header=None,sep=",",iterator = True,chunksize=10000)
         test_data_ag = pd.read_csv(os.path.join(data_dir+"AG_data/", "test.csv"),header=None,iterator = True,chunksize=10000)
-        # test_data_dbpedia = pd.read_csv(os.path.join(data_dir+"Dbpedia_data/", "test.csv"),header=None,sep=",",iterator = True,chunksize=10000)
+        test_data_dbpedia = pd.read_csv(os.path.join(data_dir+"Dbpedia_data/", "test.csv"),header=None,sep=",",iterator = True,chunksize=10000)
         return self._create_examples(test_data_imdb, test_data_yelp_p, test_data_ag, test_data_dbpedia, "test")
 
     def get_labels(self):
