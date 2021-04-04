@@ -5,7 +5,7 @@ import numpy as np
 nlp=spacy.load("en_core_web_md")
 
 test_data=pd.read_csv("test.csv",header=None,sep=",").values
-train_data=pd.read_csv("../../drive/MyDrive/data/AG_data/test.csv/train.csv",header=None,sep=",").values
+train_data=pd.read_csv("../../drive/MyDrive/data/AG_data/train.csv",header=None,sep=",").values
 
 test=[]
 train=[]
